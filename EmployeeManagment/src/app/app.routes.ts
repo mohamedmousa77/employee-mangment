@@ -6,6 +6,7 @@ import { EmployeeTableComponent } from './components/employee-table/employee-tab
 export const routes: Routes = [
     {path:'', component: EmployeeTableComponent},
     {path:'create', component: EmployeeFormComponent},
+    {path:'edite/:id', component: EmployeeFormComponent},
     {path:'employees', redirectTo: '', pathMatch:'full'},
 
 ];

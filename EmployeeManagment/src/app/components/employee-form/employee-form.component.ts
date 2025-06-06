@@ -1,6 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { CommonModule } from '@angular/common';
 
 import { Employee } from '../../../models/employee';
@@ -14,34 +14,65 @@ import { EmployeeService } from '../../services/employee.service';
 })
 
 
-export class EmployeeFormComponent {
+export class EmployeeFormComponent implements OnInit{
 
+  errorMsg: string = '';
+  isEditing: boolean = false;
   employee: Employee = {
     email: '',
     lastName: '',
     firstName: '',
     id:0,
-    phone:'',
+    phoneNumber:'',
     position:'',
   };
-  errorMsg: string = '';
 
-    constructor(private employeeService: EmployeeService, private router:Router){}
+  constructor(
+    private employeeService: EmployeeService, 
+    private router:Router, 
+    private route: ActivatedRoute,
+  ){}
+
+  ngOnInit(): void {
+      this.route.paramMap.subscribe((result) => {
+        const id = result.get('id');
+        if(id){
+          this.isEditing = true;
+          this.employeeService.getEmployeeById(Number(id)).subscribe({
+            next: (Response)=> this.employee = Response,
+            error: (err) => console.log('Error loading the employee', err),
+          });
+        }
+      });
+    }
 
   OnSubmit(): void {
-    console.log(`On submit: `,this.employee);
+    if(this.isEditing){
+      this.employeeService.updateEmployee(this.employee)
+      .subscribe({
+        next: (response) => {
+          this.router.navigate(['/']);
+        },
+        error: (err) => {
+          
+          console.error('Error occured during editing employee:', err);
+          this.errorMsg = `Error occured during editing employee: ${err.status}`;
+        }
+        })
+    }else {
     this.employeeService.createEmployee(this.employee)
-    .subscribe(
-      {
-      next: (result) => {
-        this.router.navigate(['/']);
-      },
-      error: (err) => {
-        console.error('Error creating employee:', err);
-        this.errorMsg = `Error: ${err.status} - ${err.message}`;
-      }
+      .subscribe(
+        {
+        next: (result) => {
+          this.router.navigate(['/']);
+        },
+        error: (err) => {
+          console.error('Error occured during creating employee:', err);
+          this.errorMsg = `Error occured during the creation of employee: ${err.status}`;
+        }
+      });
     }
-    );
+    
   }
 
 }

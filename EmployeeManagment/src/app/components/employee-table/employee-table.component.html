@@ -7,8 +7,9 @@
             <th>First Name</th>
             <th>Last name</th>
             <th>Email</th>
-            <th>Phone</th>
+            <th>phone Number</th>
             <th>Position</th>
+            <th>Actions</th>
         </tr>
     </thead>
     <tbody>
@@ -17,8 +18,10 @@
             <td>{{employee.firstName}}</td>
             <td>{{employee.lastName}}</td>
             <td>{{employee.email}}</td>
-            <td>{{employee.phone}}</td>
+            <td>{{employee.phoneNumber}}</td>
             <td>{{employee.position}}</td>
+            <td><button (click)="deleteEmployee(employee.id)">Delete</button></td>
+            <td><button (click)="editeEmployee(employee.id, employee)">Edit</button></td>
         </tr>
     </tbody>
 </table>
